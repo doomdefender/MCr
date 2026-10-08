@@ -2,7 +2,7 @@ name: Build Windows EXE
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   workflow_dispatch:
 
 permissions:
@@ -24,18 +24,12 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pillow pyinstaller
+          python -m pip install pillow pyinstaller
 
       - name: Build EXE
         shell: powershell
         run: |
-          if (Test-Path "build.py") {
-            python build.py
-          } elseif (Test-Path "main.py") {
-            pyinstaller --noconfirm --clean --onefile --windowed --name MetaDataCleaner main.py
-          } else {
-            Write-Error "No se encontró build.py ni main.py en el repositorio."
-          }
+          pyinstaller --noconfirm --clean --onefile --windowed --name MetaDataCleaner --icon MCr.ico metadata_cleaner.py
 
       - name: Verify EXE
         shell: powershell
