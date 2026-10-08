@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build-windows:
@@ -38,3 +38,24 @@ jobs:
           name: MetaDataCleaner-Windows
           path: dist/MetaDataCleaner.exe
           if-no-files-found: error
+      - name: Create GitHub Release
+        if: github.event_name == 'push' && github.event.head_commit.message == 'Release v0.5.8'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v0.5.8
+          name: MetaDataCleaner v0.5.8
+          body: |
+            ## MetaDataCleaner v0.5.8
+
+            Portable Windows application for offline image metadata sanitization and normalization.
+
+            ### Included
+            - Windows portable EXE
+            - Offline/local processing
+            - Supports JPG/JPEG, PNG and WebP
+            - Originals are left untouched
+            - Cleaned copies are saved with the _CLEAN suffix
+
+            This release is intended for privacy-oriented metadata cleaning and image normalization. It does not guarantee any outcome against external detection or classification systems.
+          files: dist/MetaDataCleaner.exe
+          fail_on_unmatched_files: true
