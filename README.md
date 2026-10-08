@@ -20,7 +20,7 @@ Herramienta offline para normalizar y re-encodear imágenes en Windows.
 
 ## Compilación
 
-El proyecto puede compilarse con Python y PyInstaller. También incluye un workflow de GitHub Actions para generar automáticamente el ejecutable de Windows.
+El proyecto se puede compilar localmente con Python y PyInstaller. También incluye un workflow de GitHub Actions que genera automáticamente `MetaDataCleaner.exe` para Windows en cada push a `main` y mediante ejecución manual.
 
 ## Nota
 
