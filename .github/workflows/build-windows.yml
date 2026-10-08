@@ -1,0 +1,52 @@
+name: Build Windows EXE
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pillow pyinstaller
+
+      - name: Build EXE
+        shell: powershell
+        run: |
+          if (Test-Path "build.py") {
+            python build.py
+          } elseif (Test-Path "main.py") {
+            pyinstaller --noconfirm --clean --onefile --windowed --name MetaDataCleaner main.py
+          } else {
+            Write-Error "No se encontró build.py ni main.py en el repositorio."
+          }
+
+      - name: Verify EXE
+        shell: powershell
+        run: |
+          if (-not (Test-Path "dist/MetaDataCleaner.exe")) {
+            Write-Error "No se generó dist/MetaDataCleaner.exe"
+          }
+
+      - name: Upload EXE artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: MetaDataCleaner-Windows
+          path: dist/MetaDataCleaner.exe
+          if-no-files-found: error
