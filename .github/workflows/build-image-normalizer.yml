@@ -1,0 +1,33 @@
+name: Build Image Normalizer
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "ImageNormalizer/**"
+      - ".github/workflows/build-image-normalizer.yml"
+permissions:
+  contents: read
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - shell: powershell
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r ImageNormalizer/requirements.txt
+          python -m pip install pyinstaller
+      - shell: powershell
+        run: |
+          pyinstaller --noconfirm --clean --onefile --windowed --name ImageNormalizer --collect-all qt_material --collect-all PySide6 ImageNormalizer/image_normalizer.py
+      - shell: powershell
+        run: |
+          if (-not (Test-Path "dist/ImageNormalizer.exe")) { Write-Error "No se generó dist/ImageNormalizer.exe" }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ImageNormalizer-Windows
+          path: dist/ImageNormalizer.exe
+          if-no-files-found: error
